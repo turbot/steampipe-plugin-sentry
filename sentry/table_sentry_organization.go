@@ -3,7 +3,7 @@ package sentry
 import (
 	"context"
 
-	"github.com/atlassian/go-sentry-api"
+	"github.com/jianyuan/go-sentry/v2/sentry"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
@@ -33,8 +33,19 @@ func tableSentryOrganizations(ctx context.Context) *plugin.Table {
 				Description: "",
 			},
 			{
-				Name:        "pending_access_request",
-				Type:        proto.ColumnType_INT,
+				Name:        "is_default",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "require_2fa",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+				Transform:   transform.FromField("Require2FA"),
+			},
+			{
+				Name:        "role",
+				Type:        proto.ColumnType_STRING,
 				Description: "",
 			},
 			{
@@ -43,13 +54,114 @@ func tableSentryOrganizations(ctx context.Context) *plugin.Table {
 				Description: "",
 			},
 			{
+				Name:        "alerts_member_write",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "allow_join_requests",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "allow_shared_issues",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "attachments_role",
+				Type:        proto.ColumnType_STRING,
+				Description: "",
+			},
+			{
+				Name:        "data_scrubber",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "data_scrubber_defaults",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
 				Name:        "date_created",
 				Type:        proto.ColumnType_TIMESTAMP,
 				Description: "",
 			},
 			{
+				Name:        "debug_files_role",
+				Type:        proto.ColumnType_STRING,
+				Description: "",
+			},
+			{
+				Name:        "default_role",
+				Type:        proto.ColumnType_STRING,
+				Description: "",
+			},
+			{
+				Name:        "enhanced_privacy",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "events_member_admin",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
 				Name:        "is_early_adopter",
 				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "open_membership",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "pending_access_request",
+				Type:        proto.ColumnType_INT,
+				Description: "",
+			},
+			{
+				Name:        "relay_pii_config",
+				Type:        proto.ColumnType_STRING,
+				Description: "",
+			},
+			{
+				Name:        "require_email_verification",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "scrape_java_script",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "scrub_ip_addresses",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+				Transform:   transform.FromField("ScrubIPAddresses"),
+			},
+			{
+				Name:        "store_crash_reports",
+				Type:        proto.ColumnType_STRING,
+				Description: "",
+			},
+			{
+				Name:        "access",
+				Type:        proto.ColumnType_JSON,
+				Description: "",
+			},
+			{
+				Name:        "available_roles",
+				Type:        proto.ColumnType_JSON,
+				Description: "",
+			},
+			{
+				Name:        "avatar",
+				Type:        proto.ColumnType_JSON,
 				Description: "",
 			},
 			{
@@ -63,16 +175,19 @@ func tableSentryOrganizations(ctx context.Context) *plugin.Table {
 				Description: "",
 			},
 			{
-				Name:        "teams",
+				Name:        "safe_fields",
 				Type:        proto.ColumnType_JSON,
 				Description: "",
 			},
 			{
-				Name:        "users",
+				Name:        "sensitive_fields",
 				Type:        proto.ColumnType_JSON,
 				Description: "",
-				Hydrate:     listOrganizationUsers,
-				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "status",
+				Type:        proto.ColumnType_JSON,
+				Description: "",
 			},
 		},
 	}
@@ -85,21 +200,27 @@ func listOrganizations(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 		return nil, err
 	}
 
-	orgList, _, err := conn.GetOrganizations()
-	if err != nil {
-		plugin.Logger(ctx).Error("listOrganizations", "api_error", err)
-		return nil, err
-	}
+	params := &sentry.ListCursorParams{}
+	for {
+		orgList, resp, err := conn.Organizations.List(ctx, params)
+		if err != nil {
+			plugin.Logger(ctx).Error("listOrganizations", "api_error", err)
+			return nil, err
+		}
+		for _, org := range orgList {
+			d.StreamListItem(ctx, org)
 
-	for _, org := range orgList {
-		d.StreamListItem(ctx, org)
-
-		// Context can be cancelled due to manual cancellation or the limit has been hit
-		if d.RowsRemaining(ctx) == 0 {
-			return nil, nil
+			// Context can be cancelled due to manual cancellation or the limit has been hit
+			if d.RowsRemaining(ctx) == 0 {
+				return nil, nil
+			}
+		}
+		if resp.Cursor != "" {
+			params.Cursor = resp.Cursor
+		} else {
+			break
 		}
 	}
-
 	return nil, nil
 }
 
@@ -117,29 +238,11 @@ func getOrganization(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 		return nil, err
 	}
 
-	org, err := conn.GetOrganization(slug)
+	org, _, err := conn.Organizations.Get(ctx, slug)
 	if err != nil {
 		plugin.Logger(ctx).Error("getOrganization", "api_error", err)
 		return nil, err
 	}
 
 	return org, nil
-}
-
-func listOrganizationUsers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	slug := *h.Item.(sentry.Organization).Slug
-
-	conn, err := getClient(ctx, d)
-	if err != nil {
-		plugin.Logger(ctx).Error("listOrganizationUsers", "connection_error", err)
-		return nil, err
-	}
-
-	users, err := conn.ListOrganizationUsers(slug)
-	if err != nil {
-		plugin.Logger(ctx).Error("listOrganizationUsers", "api_error", err)
-		return nil, err
-	}
-
-	return users, nil
 }

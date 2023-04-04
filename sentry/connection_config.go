@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"github.com/atlassian/go-sentry-api"
+	"github.com/jianyuan/go-sentry/v2/sentry"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/schema"
+	"golang.org/x/oauth2"
 )
 
 type sentryConfig struct {
@@ -36,18 +37,18 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error)
 	sentryConfig := GetConfig(d.Connection)
 
 	authToken := ""
-	// endpoint := ""
-	// timeout :=
 
 	if sentryConfig.AuthToken != nil {
 		authToken = *sentryConfig.AuthToken
 	}
+	if authToken != "" {
+		tokenSrc := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: authToken},
+		)
+		httpClient := oauth2.NewClient(ctx, tokenSrc)
 
-	if authToken != "" { // Authenticate with auth_token
-		client, err := sentry.NewClient(authToken, nil, nil)
-		if err != nil {
-			return nil, err
-		}
+		client := sentry.NewClient(httpClient)
+
 		return client, nil
 	}
 

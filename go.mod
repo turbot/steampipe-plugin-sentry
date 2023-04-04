@@ -3,7 +3,7 @@ module github.com/turbot/steampipe-plugin-sentry
 go 1.19
 
 require (
-	github.com/atlassian/go-sentry-api v0.0.0-20230117184421-b99a46e78fc6
+	github.com/jianyuan/go-sentry/v2 v2.4.0
 	github.com/turbot/steampipe-plugin-sdk/v5 v5.3.0
 )
 
@@ -39,6 +39,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.0.5 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.7.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
@@ -50,6 +51,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.15.0 // indirect
 	github.com/hashicorp/yamux v0.0.0-20181012175058-2f1d1f20f75d // indirect
 	github.com/iancoleman/strcase v0.2.0 // indirect
+	github.com/jianyuan/go-sentry v1.4.0 // indirect
 	github.com/jmespath/go-jmespath v0.0.0-20160202185014-0b12d6b521d8 // indirect
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
 	github.com/klauspost/compress v1.16.0 // indirect
@@ -64,6 +66,7 @@ require (
 	github.com/oklog/run v1.0.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pegasus-kv/thrift v0.13.0 // indirect
+	github.com/peterhellberg/link v1.2.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.14.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect

@@ -3,8 +3,7 @@ package sentry
 import (
 	"context"
 
-	"github.com/atlassian/go-sentry-api"
-	"github.com/turbot/go-kit/types"
+	"github.com/jianyuan/go-sentry/v2/sentry"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
@@ -50,22 +49,7 @@ func tableSentryProjects(ctx context.Context) *plugin.Table {
 				Transform:   transform.FromField("Organization").Transform(orgToSlug),
 			},
 			{
-				Name:        "default_environment",
-				Type:        proto.ColumnType_STRING,
-				Description: "",
-			},
-			{
 				Name:        "color",
-				Type:        proto.ColumnType_STRING,
-				Description: "",
-			},
-			{
-				Name:        "is_public",
-				Type:        proto.ColumnType_BOOL,
-				Description: "",
-			},
-			{
-				Name:        "call_sign",
 				Type:        proto.ColumnType_STRING,
 				Description: "",
 			},
@@ -75,18 +59,13 @@ func tableSentryProjects(ctx context.Context) *plugin.Table {
 				Description: "",
 			},
 			{
-				Name:        "first_event",
-				Type:        proto.ColumnType_TIMESTAMP,
+				Name:        "data_scrubber",
+				Type:        proto.ColumnType_STRING,
 				Description: "",
 			},
 			{
-				Name:        "is_bookmarked",
-				Type:        proto.ColumnType_BOOL,
-				Description: "",
-			},
-			{
-				Name:        "call_sign_reviewed",
-				Type:        proto.ColumnType_BOOL,
+				Name:        "data_scrubber_defaults",
+				Type:        proto.ColumnType_STRING,
 				Description: "",
 			},
 			{
@@ -100,10 +79,111 @@ func tableSentryProjects(ctx context.Context) *plugin.Table {
 				Description: "",
 			},
 			{
+				Name:        "fingerprinting_rules",
+				Type:        proto.ColumnType_STRING,
+				Description: "",
+			},
+			{
+				Name:        "first_event",
+				Type:        proto.ColumnType_TIMESTAMP,
+				Description: "",
+			},
+			{
+				Name:        "grouping_enhancements",
+				Type:        proto.ColumnType_STRING,
+				Description: "",
+			},
+			{
+				Name:        "has_access",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "is_bookmarked",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "is_internal",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "is_member",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "is_public",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "platform",
+				Type:        proto.ColumnType_STRING,
+				Description: "",
+			},
+			{
+				Name:        "processing_issues",
+				Type:        proto.ColumnType_INT,
+				Description: "",
+			},
+			{
+				Name:        "resolve_age",
+				Type:        proto.ColumnType_INT,
+				Description: "",
+			},
+			{
+				Name:        "scrape_java_script",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+			},
+			{
+				Name:        "scrub_ip_addresses",
+				Type:        proto.ColumnType_BOOL,
+				Description: "",
+				Transform:   transform.FromField("ScrubIPAddresses"),
+			},
+			{
+				Name:        "security_token",
+				Type:        proto.ColumnType_STRING,
+				Description: "",
+			},
+			{
+				Name:        "security_token_header",
+				Type:        proto.ColumnType_STRING,
+				Description: "",
+			},
+			{
+				Name:        "subject_prefix",
+				Type:        proto.ColumnType_STRING,
+				Description: "",
+			},
+			{
+				Name:        "subject_template",
+				Type:        proto.ColumnType_STRING,
+				Description: "",
+			},
+			{
 				Name:        "verify_ssl",
 				Type:        proto.ColumnType_BOOL,
 				Description: "",
 				Transform:   transform.FromField("VerifySSL"),
+			},
+			{
+				Name:        "allowed_domains",
+				Type:        proto.ColumnType_JSON,
+				Description: "",
+			},
+			{
+				Name:        "avatar",
+				Type:        proto.ColumnType_JSON,
+				Description: "",
+			},
+			{
+				Name:        "features",
+				Type:        proto.ColumnType_JSON,
+				Description: "",
 			},
 			{
 				Name:        "options",
@@ -116,17 +196,22 @@ func tableSentryProjects(ctx context.Context) *plugin.Table {
 				Description: "",
 			},
 			{
-				Name:        "platforms",
+				Name:        "safe_fields",
 				Type:        proto.ColumnType_JSON,
 				Description: "",
 			},
 			{
-				Name:        "plugins",
+				Name:        "sensitive_fields",
 				Type:        proto.ColumnType_JSON,
 				Description: "",
 			},
 			{
 				Name:        "team",
+				Type:        proto.ColumnType_JSON,
+				Description: "",
+			},
+			{
+				Name:        "teams",
 				Type:        proto.ColumnType_JSON,
 				Description: "",
 			},
@@ -141,7 +226,7 @@ func listProjects(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDat
 		return nil, err
 	}
 
-	projects, _, err := conn.GetProjects()
+	projects, _, err := conn.Projects.List(ctx)
 	if err != nil {
 		plugin.Logger(ctx).Error("listProjects", "api_error", err)
 		return nil, err
@@ -174,10 +259,7 @@ func getProject(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData)
 		return nil, err
 	}
 
-	input := sentry.Organization{}
-	input.Slug = types.String(org_slug)
-
-	org, err := conn.GetProject(input, slug)
+	org, _, err := conn.Projects.Get(ctx, org_slug, slug)
 	if err != nil {
 		plugin.Logger(ctx).Error("getProject", "api_error", err)
 		return nil, err
@@ -190,5 +272,5 @@ func orgToSlug(ctx context.Context, d *transform.TransformData) (interface{}, er
 	if d.Value == nil {
 		return nil, nil
 	}
-	return d.Value.(*sentry.Organization).Slug, nil
+	return d.Value.(sentry.Organization).Slug, nil
 }
