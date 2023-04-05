@@ -1,8 +1,11 @@
 package sentry
 
 import (
+	"bufio"
 	"context"
 	"errors"
+	"os"
+	"strings"
 
 	"github.com/jianyuan/go-sentry/v2/sentry"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
@@ -36,12 +39,13 @@ func GetConfig(connection *plugin.Connection) sentryConfig {
 func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error) {
 	sentryConfig := GetConfig(d.Connection)
 
-	authToken := ""
+	authToken := os.Getenv("SENTRY_AUTH_TOKEN")
 
 	if sentryConfig.AuthToken != nil {
 		authToken = *sentryConfig.AuthToken
 	}
-	if authToken != "" {
+
+	if authToken != "" { // Authenticate with AuthToken
 		tokenSrc := oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: authToken},
 		)
@@ -50,7 +54,33 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error)
 		client := sentry.NewClient(httpClient)
 
 		return client, nil
+	} else { // Authenticate with CLI
+		home, _ := os.UserHomeDir()
+		file, _ := os.Open(home + "/.sentryclirc")
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			line := scanner.Text()
+			if equal := strings.Index(line, "="); equal >= 0 {
+				if key := strings.TrimSpace(line[:equal]); len(key) > 0 {
+					authToken = ""
+					if len(line) > equal {
+						authToken = strings.TrimSpace(line[equal+1:])
+					}
+				}
+			}
+		}
+
+		if authToken != "" {
+			tokenSrc := oauth2.StaticTokenSource(
+				&oauth2.Token{AccessToken: authToken},
+			)
+			httpClient := oauth2.NewClient(ctx, tokenSrc)
+
+			client := sentry.NewClient(httpClient)
+
+			return client, nil
+		}
 	}
 
-	return nil, errors.New("'auth_token' must be set in the connection configuration. Edit your connection configuration file and then restart Steampipe")
+	return nil, errors.New("'auth_token' must be set in the connection configuration. Edit your connection configuration file and then restart Steampipe.")
 }

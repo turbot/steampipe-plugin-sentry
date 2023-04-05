@@ -9,7 +9,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableSentryOrganizations(ctx context.Context) *plugin.Table {
+func tableSentryOrganization(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "sentry_organization",
 		Description: "Retrieve information about your organizations.",

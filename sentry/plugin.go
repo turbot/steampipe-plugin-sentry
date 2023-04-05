@@ -17,8 +17,15 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			Schema:      ConfigSchema,
 		},
 		TableMap: map[string]*plugin.Table{
-			"sentry_organization": tableSentryOrganizations(ctx),
-			"sentry_project":      tableSentryProjects(ctx),
+			"sentry_issue_alert":              tableSentryIssueAlert(ctx),
+			"sentry_key":                      tableSentryKey(ctx),
+			"sentry_metric_alert":             tableSentryMetricAlert(ctx),
+			"sentry_organization":             tableSentryOrganization(ctx),
+			"sentry_organization_integration": tableSentryOrganizationIntegration(ctx),
+			"sentry_organization_member":      tableSentryOrganizationMember(ctx),
+			"sentry_organization_repository":  tableSentryOrganizationRepository(ctx),
+			"sentry_project":                  tableSentryProject(ctx),
+			"sentry_team":                     tableSentryTeam(ctx),
 		},
 	}
 	return p

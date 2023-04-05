@@ -9,7 +9,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableSentryProjects(ctx context.Context) *plugin.Table {
+func tableSentryProject(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "sentry_project",
 		Description: "Retrieve information about your projects.",
@@ -17,7 +17,7 @@ func tableSentryProjects(ctx context.Context) *plugin.Table {
 			Hydrate: listProjects,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.AllColumns([]string{"slug", "org_slug"}),
+			KeyColumns: plugin.AllColumns([]string{"slug", "organization_slug"}),
 			Hydrate:    getProject,
 		},
 		Columns: []*plugin.Column{
@@ -43,7 +43,7 @@ func tableSentryProjects(ctx context.Context) *plugin.Table {
 				Description: "",
 			},
 			{
-				Name:        "org_slug",
+				Name:        "organization_slug",
 				Type:        proto.ColumnType_STRING,
 				Description: "",
 				Transform:   transform.FromField("Organization").Transform(orgToSlug),
@@ -186,6 +186,13 @@ func tableSentryProjects(ctx context.Context) *plugin.Table {
 				Description: "",
 			},
 			{
+				Name:        "filters",
+				Type:        proto.ColumnType_JSON,
+				Description: "",
+				Hydrate:     getProjectFilters,
+				Transform:   transform.FromValue(),
+			},
+			{
 				Name:        "options",
 				Type:        proto.ColumnType_JSON,
 				Description: "",
@@ -194,6 +201,13 @@ func tableSentryProjects(ctx context.Context) *plugin.Table {
 				Name:        "organization",
 				Type:        proto.ColumnType_JSON,
 				Description: "",
+			},
+			{
+				Name:        "ownership",
+				Type:        proto.ColumnType_JSON,
+				Description: "",
+				Hydrate:     getProjectOwnership,
+				Transform:   transform.FromValue(),
 			},
 			{
 				Name:        "safe_fields",
@@ -246,10 +260,10 @@ func listProjects(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDat
 
 func getProject(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	slug := d.EqualsQuals["slug"].GetStringValue()
-	org_slug := d.EqualsQuals["org_slug"].GetStringValue()
+	organization_slug := d.EqualsQuals["organization_slug"].GetStringValue()
 
-	// Check if slug or org_slug is empty.
-	if slug == "" || org_slug == "" {
+	// Check if slug or organization_slug is empty.
+	if slug == "" || organization_slug == "" {
 		return nil, nil
 	}
 
@@ -259,13 +273,49 @@ func getProject(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData)
 		return nil, err
 	}
 
-	org, _, err := conn.Projects.Get(ctx, org_slug, slug)
+	org, _, err := conn.Projects.Get(ctx, organization_slug, slug)
 	if err != nil {
 		plugin.Logger(ctx).Error("getProject", "api_error", err)
 		return nil, err
 	}
 
 	return org, nil
+}
+
+func getProjectFilters(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	project := h.Item.(*sentry.Project)
+
+	conn, err := getClient(ctx, d)
+	if err != nil {
+		plugin.Logger(ctx).Error("getProjectFilters", "connection_error", err)
+		return nil, err
+	}
+
+	filters, _, err := conn.ProjectFilter.Get(ctx, *project.Organization.Slug, project.Slug)
+	if err != nil {
+		plugin.Logger(ctx).Error("getProjectFilters", "api_error", err)
+		return nil, err
+	}
+
+	return filters, nil
+}
+
+func getProjectOwnership(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	project := h.Item.(*sentry.Project)
+
+	conn, err := getClient(ctx, d)
+	if err != nil {
+		plugin.Logger(ctx).Error("getProjectOwnership", "connection_error", err)
+		return nil, err
+	}
+
+	ownership, _, err := conn.ProjectOwnerships.Get(ctx, *project.Organization.Slug, project.Slug)
+	if err != nil {
+		plugin.Logger(ctx).Error("getProjectOwnership", "api_error", err)
+		return nil, err
+	}
+
+	return ownership, nil
 }
 
 func orgToSlug(ctx context.Context, d *transform.TransformData) (interface{}, error) {
