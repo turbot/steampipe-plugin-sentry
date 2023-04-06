@@ -12,7 +12,7 @@ import (
 func tableSentryKey(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "sentry_key",
-		Description: "Retrieve information about your keys.",
+		Description: "Retrieve information about your project keys.",
 		List: &plugin.ListConfig{
 			ParentHydrate: listProjects,
 			Hydrate:       listKeys,
@@ -27,60 +27,60 @@ func tableSentryKey(ctx context.Context) *plugin.Table {
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The ID of the key.",
 				Transform:   transform.FromField("ID"),
 			},
 			{
 				Name:        "name",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The name of the key.",
 			},
 			{
 				Name:        "is_active",
-				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Type:        proto.ColumnType_BOOL,
+				Description: "Flag indicating the key is active.",
 			},
 			{
 				Name:        "secret",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "Secret key portion of the client key.",
 			},
 			{
 				Name:        "project_slug",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The slug of the project the key belongs to.",
 			},
 			{
 				Name:        "date_created",
 				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "",
+				Description: "The creation timestamp for the key.",
 			},
 			{
 				Name:        "label",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The label of the key.",
 			},
 			{
 				Name:        "project_id",
-				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Type:        proto.ColumnType_INT,
+				Description: "The ID of the project the keys belong to.",
 				Transform:   transform.FromField("ProjectID"),
 			},
 			{
 				Name:        "public",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "Public key portion of the client key.",
 			},
 			{
 				Name:        "dsn",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "DSN for the key.",
 				Transform:   transform.FromField("DSN"),
 			},
 			{
 				Name:        "rate_limit",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "Represents a project key's rate limit.",
 			},
 		},
 	}
@@ -93,10 +93,10 @@ type ProjectKey struct {
 
 func listKeys(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	project := h.Item.(*sentry.Project)
-	projSlug := d.EqualsQuals["project_slug"].GetStringValue()
+	projectSlug := d.EqualsQuals["project_slug"].GetStringValue()
 
-	// check if the provided projSlug is not matching with the parentHydrate
-	if projSlug != "" && projSlug != project.Slug {
+	// check if the provided projectSlug is not matching with the parentHydrate
+	if projectSlug != "" && projectSlug != project.Slug {
 		return nil, nil
 	}
 

@@ -12,7 +12,7 @@ import (
 func tableSentryMetricAlert(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "sentry_metric_alert",
-		Description: "Retrieve information about your metric alert rules.",
+		Description: "Retrieve information about your metric alerts.",
 		List: &plugin.ListConfig{
 			ParentHydrate: listProjects,
 			Hydrate:       listMetricAlerts,
@@ -31,89 +31,89 @@ func tableSentryMetricAlert(ctx context.Context) *plugin.Table {
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The ID of this metric alert.",
 				Transform:   transform.FromField("ID"),
 			},
 			{
 				Name:        "name",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The metric alert name.",
 			},
 			{
 				Name:        "owner",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "Specifies the owner id of this metric alert rule.",
 			},
 			{
 				Name:        "organization_slug",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The slug of the organization the metric alert belongs to.",
 			},
 			{
 				Name:        "project_slug",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The slug of the project the metric alert belongs to.",
 			},
 			{
 				Name:        "aggregate",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The aggregation criteria to apply.",
 			},
 			{
 				Name:        "data_set",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The Sentry metric alert category.",
 			},
 			{
 				Name:        "date_created",
 				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "",
+				Description: "The creation timestamp of the metric alert.",
 			},
 			{
 				Name:        "environment",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "Perform metric alert rule in a specific environment.",
 			},
 			{
 				Name:        "query",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The query filter to apply.",
 			},
 			{
 				Name:        "resolve_threshold",
 				Type:        proto.ColumnType_DOUBLE,
-				Description: "",
+				Description: "The value at which the metric alert rule resolves.",
 			},
 			{
 				Name:        "task_uuid",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The UUID of the async task that can be spawned to create the metric alert.",
 				Transform:   transform.FromField("TaskUUID"),
 			},
 			{
 				Name:        "threshold_type",
 				Type:        proto.ColumnType_INT,
-				Description: "",
+				Description: "The type of threshold.",
 			},
 			{
 				Name:        "time_window",
 				Type:        proto.ColumnType_DOUBLE,
-				Description: "",
+				Description: "The period to evaluate the metric alert rule in minutes.",
 			},
 			{
 				Name:        "event_types",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The events type of dataset.",
 			},
 			{
 				Name:        "projects",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The projects for which the metric alert is created.",
 			},
 			{
 				Name:        "triggers",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "Represents a metric alert trigger.",
 			},
 		},
 	}
@@ -127,10 +127,10 @@ type MetricAlert struct {
 
 func listMetricAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	project := h.Item.(*sentry.Project)
-	projSlug := d.EqualsQuals["project_slug"].GetStringValue()
+	projectSlug := d.EqualsQuals["project_slug"].GetStringValue()
 
-	// check if the provided projSlug is not matching with the parentHydrate
-	if projSlug != "" && projSlug != project.Slug {
+	// check if the provided projectSlug is not matching with the parentHydrate
+	if projectSlug != "" && projectSlug != project.Slug {
 		return nil, nil
 	}
 
@@ -155,22 +155,24 @@ func listMetricAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 				return nil, nil
 			}
 		}
+
 		if resp.Cursor != "" {
 			params.Cursor = resp.Cursor
 		} else {
 			break
 		}
 	}
+
 	return nil, nil
 }
 
 func getMetricAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	orgSlug := d.EqualsQuals["organization_slug"].GetStringValue()
-	projSlug := d.EqualsQuals["project_slug"].GetStringValue()
+	projectSlug := d.EqualsQuals["project_slug"].GetStringValue()
 	id := d.EqualsQuals["id"].GetStringValue()
 
-	// Check if orgSlug or projSlug or id is empty.
-	if orgSlug == "" || projSlug == "" || id == "" {
+	// Check if orgSlug or projectSlug or id is empty.
+	if orgSlug == "" || projectSlug == "" || id == "" {
 		return nil, nil
 	}
 
@@ -180,11 +182,11 @@ func getMetricAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateD
 		return nil, err
 	}
 
-	metric, _, err := conn.MetricAlerts.Get(ctx, orgSlug, projSlug, id)
+	metric, _, err := conn.MetricAlerts.Get(ctx, orgSlug, projectSlug, id)
 	if err != nil {
 		plugin.Logger(ctx).Error("getMetricAlert", "api_error", err)
 		return nil, err
 	}
 
-	return MetricAlert{*metric, orgSlug, projSlug}, nil
+	return MetricAlert{*metric, orgSlug, projectSlug}, nil
 }

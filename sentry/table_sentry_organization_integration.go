@@ -31,74 +31,74 @@ func tableSentryOrganizationIntegration(ctx context.Context) *plugin.Table {
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The ID of the integration.",
 				Transform:   transform.FromField("ID"),
 			},
 			{
 				Name:        "name",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The name of the integration.",
 			},
 			{
 				Name:        "status",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The status of the integration.",
 			},
 			{
 				Name:        "organization_slug",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The slug of the organization the integration belongs to.",
 			},
 			{
 				Name:        "account_type",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The account type of the integration.",
 			},
 			{
 				Name:        "domain_name",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The domain name of the integration.",
 			},
 			{
 				Name:        "external_id",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The external id of the integration.",
 			},
 			{
 				Name:        "grace_period_end",
 				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "",
+				Description: "The grace period end timestamp.",
 			},
 			{
 				Name:        "icon",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The icon of the integration.",
 			},
 			{
 				Name:        "organization_id",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The organization ID.",
 			},
 			{
 				Name:        "organization_integration_status",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The organization integration status.",
 			},
 			{
 				Name:        "provider_key",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The integration provider key.",
 				Transform:   transform.FromField("Provider").Transform(fetchProviderKey),
 			},
 			{
 				Name:        "provider",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The integration provider.",
 			},
 			{
 				Name:        "scopes",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The integration scopes.",
 			},
 		},
 	}
@@ -143,6 +143,7 @@ func listOrganizationIntegrations(ctx context.Context, d *plugin.QueryData, h *p
 				return nil, nil
 			}
 		}
+
 		if resp.Cursor != "" {
 			params.Cursor = resp.Cursor
 		} else {

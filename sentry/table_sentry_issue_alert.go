@@ -12,7 +12,7 @@ import (
 func tableSentryIssueAlert(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "sentry_issue_alert",
-		Description: "Retrieve information about your issue alert rules.",
+		Description: "Retrieve information about your issue alerts.",
 		List: &plugin.ListConfig{
 			ParentHydrate: listProjects,
 			Hydrate:       listIssueAlerts,
@@ -31,84 +31,84 @@ func tableSentryIssueAlert(ctx context.Context) *plugin.Table {
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The ID of the issue alert.",
 				Transform:   transform.FromField("ID"),
 			},
 			{
 				Name:        "name",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The issue alert name.",
 			},
 			{
 				Name:        "owner",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The owner of the issue alert.",
 			},
 			{
 				Name:        "organization_slug",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The slug of the organization the issue alert belongs to.",
 			},
 			{
 				Name:        "project_slug",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The slug of the project the issue alert belongs to.",
 			},
 			{
 				Name:        "action_match",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "Trigger actions when an event is captured by Sentry and any or all of the specified conditions happen.",
 			},
 			{
 				Name:        "date_created",
 				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "",
+				Description: "The creation timestamp of the issue alert.",
 			},
 			{
 				Name:        "environment",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "Perform issue alert in a specific environment.",
 			},
 			{
 				Name:        "filter_match",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "Trigger actions if all, any, or none of the specified filters match.",
 			},
 			{
 				Name:        "frequency",
 				Type:        proto.ColumnType_INT,
-				Description: "",
+				Description: "Perform actions at most once every X minutes for this issue. Defaults to 30.",
 			},
 			{
 				Name:        "task_uuid",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The UUID of the async task that can be spawned to create the issue alert.",
 				Transform:   transform.FromField("TaskUUID"),
 			},
 			{
 				Name:        "actions",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "List of actions.",
 			},
 			{
 				Name:        "conditions",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "List of conditions.",
 			},
 			{
 				Name:        "created_by",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The rule creator who created the issue alert.",
 			},
 			{
 				Name:        "filters",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "List of filters.",
 			},
 			{
 				Name:        "projects",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The projects for which the issue alert is created.",
 			},
 		},
 	}
@@ -122,10 +122,10 @@ type IssueAlert struct {
 
 func listIssueAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	project := h.Item.(*sentry.Project)
-	projSlug := d.EqualsQuals["project_slug"].GetStringValue()
+	projectSlug := d.EqualsQuals["project_slug"].GetStringValue()
 
-	// check if the provided projSlug is not matching with the parentHydrate
-	if projSlug != "" && projSlug != project.Slug {
+	// check if the provided projectSlug is not matching with the parentHydrate
+	if projectSlug != "" && projectSlug != project.Slug {
 		return nil, nil
 	}
 
@@ -150,22 +150,24 @@ func listIssueAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 				return nil, nil
 			}
 		}
+
 		if resp.Cursor != "" {
 			params.Cursor = resp.Cursor
 		} else {
 			break
 		}
 	}
+
 	return nil, nil
 }
 
 func getIssueAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	orgSlug := d.EqualsQuals["organization_slug"].GetStringValue()
-	projSlug := d.EqualsQuals["project_slug"].GetStringValue()
+	projectSlug := d.EqualsQuals["project_slug"].GetStringValue()
 	id := d.EqualsQuals["id"].GetStringValue()
 
-	// Check if orgSlug or projSlug or id is empty.
-	if orgSlug == "" || projSlug == "" || id == "" {
+	// Check if orgSlug or projectSlug or id is empty.
+	if orgSlug == "" || projectSlug == "" || id == "" {
 		return nil, nil
 	}
 
@@ -175,11 +177,11 @@ func getIssueAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDa
 		return nil, err
 	}
 
-	issue, _, err := conn.IssueAlerts.Get(ctx, orgSlug, projSlug, id)
+	issue, _, err := conn.IssueAlerts.Get(ctx, orgSlug, projectSlug, id)
 	if err != nil {
 		plugin.Logger(ctx).Error("getIssueAlert", "api_error", err)
 		return nil, err
 	}
 
-	return IssueAlert{*issue, orgSlug, projSlug}, nil
+	return IssueAlert{*issue, orgSlug, projectSlug}, nil
 }

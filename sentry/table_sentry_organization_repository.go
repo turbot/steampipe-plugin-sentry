@@ -31,48 +31,48 @@ func tableSentryOrganizationRepository(ctx context.Context) *plugin.Table {
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The ID of this repository.",
 				Transform:   transform.FromField("ID"),
 			},
 			{
 				Name:        "name",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The name of the repository.",
 			},
 			{
 				Name:        "status",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The status of the repository.",
 			},
 			{
 				Name:        "organization_slug",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The slug of the organization the repository belongs to.",
 			},
 			{
 				Name:        "date_created",
 				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "",
+				Description: "The creation timestamp of the repository.",
 			},
 			{
 				Name:        "external_slug",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The slug of the repository.",
 			},
 			{
 				Name:        "integration_id",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The organization integration ID for repository.",
 			},
 			{
 				Name:        "url",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The url of the repository.",
 			},
 			{
 				Name:        "provider",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The repository provider.",
 			},
 		},
 	}
@@ -117,6 +117,7 @@ func listOrganizationRepositories(ctx context.Context, d *plugin.QueryData, h *p
 				return nil, nil
 			}
 		}
+
 		if resp.Cursor != "" {
 			params.Cursor = resp.Cursor
 		} else {

@@ -24,170 +24,170 @@ func tableSentryOrganization(ctx context.Context) *plugin.Table {
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The ID of the organization.",
 				Transform:   transform.FromField("ID"),
 			},
 			{
 				Name:        "name",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The name of the organization.",
 			},
 			{
 				Name:        "is_default",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Check if the organization is the default.",
 			},
 			{
 				Name:        "require_2fa",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Check if the organization has 2FA enabled.",
 				Transform:   transform.FromField("Require2FA"),
 			},
 			{
 				Name:        "role",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The organization role.",
 			},
 			{
 				Name:        "slug",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The slug of the organization.",
 			},
 			{
 				Name:        "alerts_member_write",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Check if the organization has alerts member write enabled.",
 			},
 			{
 				Name:        "allow_join_requests",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Check if the organization has allowed join requests.",
 			},
 			{
 				Name:        "allow_shared_issues",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Check if the organization has allowed shared issues.",
 			},
 			{
 				Name:        "attachments_role",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The organization attachments role.",
 			},
 			{
 				Name:        "data_scrubber",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Check if the organization has data scrubber enabled.",
 			},
 			{
 				Name:        "data_scrubber_defaults",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Check if the organization has data scrubber defaults enabled.",
 			},
 			{
 				Name:        "date_created",
 				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "",
+				Description: "The creation timestamp of the organization.",
 			},
 			{
 				Name:        "debug_files_role",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The organization debug files role.",
 			},
 			{
 				Name:        "default_role",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The default role of the organization.",
 			},
 			{
 				Name:        "enhanced_privacy",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Check if the organization has enhanced privacy enabled.",
 			},
 			{
 				Name:        "events_member_admin",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Check if the organization has events member admin access.",
 			},
 			{
 				Name:        "is_early_adopter",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Check if the organization has early adopter enabled.",
 			},
 			{
 				Name:        "open_membership",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Check if the organization has open membership enabled.",
 			},
 			{
 				Name:        "pending_access_request",
 				Type:        proto.ColumnType_INT,
-				Description: "",
+				Description: "The number of the pending access requests.",
 			},
 			{
 				Name:        "relay_pii_config",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The relay pii config.",
 			},
 			{
 				Name:        "require_email_verification",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Check if the organization require email verification.",
 			},
 			{
 				Name:        "scrape_java_script",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Check if the organization scrape java script.",
 			},
 			{
 				Name:        "scrub_ip_addresses",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Check if the organization scrub IP addresses.",
 				Transform:   transform.FromField("ScrubIPAddresses"),
 			},
 			{
 				Name:        "store_crash_reports",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The store crash reports.",
 			},
 			{
 				Name:        "access",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The organization access.",
 			},
 			{
 				Name:        "available_roles",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "Represents a Sentry organization's available role.",
 			},
 			{
 				Name:        "avatar",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "Represents a Sentry organization's avatar.",
 			},
 			{
 				Name:        "features",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The organization features.",
 			},
 			{
 				Name:        "quota",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "Represents a Sentry organization's quota.",
 			},
 			{
 				Name:        "safe_fields",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The organization safe fields.",
 			},
 			{
 				Name:        "sensitive_fields",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The organization sensitive fields.",
 			},
 			{
 				Name:        "status",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "Represents a Sentry organization's status.",
 			},
 		},
 	}
@@ -215,6 +215,7 @@ func listOrganizations(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 				return nil, nil
 			}
 		}
+
 		if resp.Cursor != "" {
 			params.Cursor = resp.Cursor
 		} else {
