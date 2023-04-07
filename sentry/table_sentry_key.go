@@ -82,6 +82,14 @@ func tableSentryKey(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_JSON,
 				Description: "Represents a project key's rate limit.",
 			},
+
+			/// Steampipe standard columns
+			{
+				Name:        "title",
+				Description: "Title of the resource.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("name"),
+			},
 		},
 	}
 }
@@ -102,7 +110,7 @@ func listKeys(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (
 
 	conn, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("listKeys", "connection_error", err)
+		plugin.Logger(ctx).Error("sentry_key.listKeys", "connection_error", err)
 		return nil, err
 	}
 
@@ -110,7 +118,7 @@ func listKeys(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (
 	for {
 		keys, resp, err := conn.ProjectKeys.List(ctx, *project.Organization.Slug, project.Slug, params)
 		if err != nil {
-			plugin.Logger(ctx).Error("listKeys", "api_error", err)
+			plugin.Logger(ctx).Error("sentry_key.listKeys", "api_error", err)
 			return nil, err
 		}
 		for _, key := range keys {

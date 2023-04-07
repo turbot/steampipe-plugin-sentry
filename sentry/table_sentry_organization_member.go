@@ -99,6 +99,14 @@ func tableSentryOrganizationMember(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_JSON,
 				Description: "Represents a Sentry user.",
 			},
+
+			/// Steampipe standard columns
+			{
+				Name:        "title",
+				Description: "Title of the resource.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("name"),
+			},
 		},
 	}
 }
@@ -119,7 +127,7 @@ func listOrganizationMembers(ctx context.Context, d *plugin.QueryData, h *plugin
 
 	conn, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("listOrganizationMembers", "connection_error", err)
+		plugin.Logger(ctx).Error("sentry_organization_member.listOrganizationMembers", "connection_error", err)
 		return nil, err
 	}
 
@@ -127,7 +135,7 @@ func listOrganizationMembers(ctx context.Context, d *plugin.QueryData, h *plugin
 	for {
 		memberList, resp, err := conn.OrganizationMembers.List(ctx, *org.Slug, params)
 		if err != nil {
-			plugin.Logger(ctx).Error("listOrganizationMembers", "api_error", err)
+			plugin.Logger(ctx).Error("sentry_organization_member.listOrganizationMembers", "api_error", err)
 			return nil, err
 		}
 		for _, member := range memberList {
@@ -159,13 +167,13 @@ func getOrganizationMember(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 
 	conn, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("getOrganizationMember", "connection_error", err)
+		plugin.Logger(ctx).Error("sentry_organization_member.getOrganizationMember", "connection_error", err)
 		return nil, err
 	}
 
 	member, _, err := conn.OrganizationMembers.Get(ctx, orgSlug, memberId)
 	if err != nil {
-		plugin.Logger(ctx).Error("getOrganizationMember", "api_error", err)
+		plugin.Logger(ctx).Error("sentry_organization_member.getOrganizationMember", "api_error", err)
 		return nil, err
 	}
 

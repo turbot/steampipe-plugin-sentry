@@ -110,6 +110,14 @@ func tableSentryIssueAlert(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_JSON,
 				Description: "The projects for which the issue alert is created.",
 			},
+
+			/// Steampipe standard columns
+			{
+				Name:        "title",
+				Description: "Title of the resource.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("name"),
+			},
 		},
 	}
 }
@@ -131,7 +139,7 @@ func listIssueAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 
 	conn, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("listIssueAlerts", "connection_error", err)
+		plugin.Logger(ctx).Error("sentry_issue_alert.listIssueAlerts", "connection_error", err)
 		return nil, err
 	}
 
@@ -139,7 +147,7 @@ func listIssueAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 	for {
 		issues, resp, err := conn.IssueAlerts.List(ctx, *project.Organization.Slug, project.Slug, params)
 		if err != nil {
-			plugin.Logger(ctx).Error("listIssueAlerts", "api_error", err)
+			plugin.Logger(ctx).Error("sentry_issue_alert.listIssueAlerts", "api_error", err)
 			return nil, err
 		}
 		for _, issue := range issues {
@@ -173,13 +181,13 @@ func getIssueAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDa
 
 	conn, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("getIssueAlert", "connection_error", err)
+		plugin.Logger(ctx).Error("sentry_issue_alert.getIssueAlert", "connection_error", err)
 		return nil, err
 	}
 
 	issue, _, err := conn.IssueAlerts.Get(ctx, orgSlug, projectSlug, id)
 	if err != nil {
-		plugin.Logger(ctx).Error("getIssueAlert", "api_error", err)
+		plugin.Logger(ctx).Error("sentry_issue_alert.getIssueAlert", "api_error", err)
 		return nil, err
 	}
 

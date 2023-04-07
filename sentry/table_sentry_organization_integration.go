@@ -100,6 +100,14 @@ func tableSentryOrganizationIntegration(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_JSON,
 				Description: "The integration scopes.",
 			},
+
+			/// Steampipe standard columns
+			{
+				Name:        "title",
+				Description: "Title of the resource.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("name"),
+			},
 		},
 	}
 }
@@ -120,7 +128,7 @@ func listOrganizationIntegrations(ctx context.Context, d *plugin.QueryData, h *p
 
 	conn, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("listOrganizationIntegrations", "connection_error", err)
+		plugin.Logger(ctx).Error("sentry_organization_integration.listOrganizationIntegrations", "connection_error", err)
 		return nil, err
 	}
 
@@ -132,7 +140,7 @@ func listOrganizationIntegrations(ctx context.Context, d *plugin.QueryData, h *p
 	for {
 		integrationList, resp, err := conn.OrganizationIntegrations.List(ctx, *org.Slug, params)
 		if err != nil {
-			plugin.Logger(ctx).Error("listOrganizationIntegrations", "api_error", err)
+			plugin.Logger(ctx).Error("sentry_organization_integration.listOrganizationIntegrations", "api_error", err)
 			return nil, err
 		}
 		for _, integration := range integrationList {

@@ -12,6 +12,9 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 	p := &plugin.Plugin{
 		Name:             "steampipe-plugin-sentry",
 		DefaultTransform: transform.FromCamel(),
+		DefaultIgnoreConfig: &plugin.IgnoreConfig{
+			ShouldIgnoreErrorFunc: shouldIgnoreErrors([]string{"404"}),
+		},
 		ConnectionConfigSchema: &plugin.ConnectionConfigSchema{
 			NewInstance: ConfigInstance,
 			Schema:      ConfigSchema,

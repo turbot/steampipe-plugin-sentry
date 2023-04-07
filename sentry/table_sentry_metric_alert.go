@@ -115,6 +115,14 @@ func tableSentryMetricAlert(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_JSON,
 				Description: "Represents a metric alert trigger.",
 			},
+
+			/// Steampipe standard columns
+			{
+				Name:        "title",
+				Description: "Title of the resource.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("name"),
+			},
 		},
 	}
 }
@@ -136,7 +144,7 @@ func listMetricAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 
 	conn, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("listMetricAlerts", "connection_error", err)
+		plugin.Logger(ctx).Error("sentry_metric_alert.listMetricAlerts", "connection_error", err)
 		return nil, err
 	}
 
@@ -144,7 +152,7 @@ func listMetricAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 	for {
 		metrics, resp, err := conn.MetricAlerts.List(ctx, *project.Organization.Slug, project.Slug, params)
 		if err != nil {
-			plugin.Logger(ctx).Error("listMetricAlerts", "api_error", err)
+			plugin.Logger(ctx).Error("sentry_metric_alert.listMetricAlerts", "api_error", err)
 			return nil, err
 		}
 		for _, metric := range metrics {
@@ -178,13 +186,13 @@ func getMetricAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateD
 
 	conn, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("getMetricAlert", "connection_error", err)
+		plugin.Logger(ctx).Error("sentry_metric_alert.getMetricAlert", "connection_error", err)
 		return nil, err
 	}
 
 	metric, _, err := conn.MetricAlerts.Get(ctx, orgSlug, projectSlug, id)
 	if err != nil {
-		plugin.Logger(ctx).Error("getMetricAlert", "api_error", err)
+		plugin.Logger(ctx).Error("sentry_metric_alert.getMetricAlert", "api_error", err)
 		return nil, err
 	}
 

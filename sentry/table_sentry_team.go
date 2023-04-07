@@ -84,6 +84,14 @@ func tableSentryTeam(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_JSON,
 				Description: "Represents an avatar.",
 			},
+
+			/// Steampipe standard columns
+			{
+				Name:        "title",
+				Description: "Title of the resource.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("name"),
+			},
 		},
 	}
 }

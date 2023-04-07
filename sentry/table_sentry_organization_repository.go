@@ -74,6 +74,14 @@ func tableSentryOrganizationRepository(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_JSON,
 				Description: "The repository provider.",
 			},
+
+			/// Steampipe standard columns
+			{
+				Name:        "title",
+				Description: "Title of the resource.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("name"),
+			},
 		},
 	}
 }
@@ -94,7 +102,7 @@ func listOrganizationRepositories(ctx context.Context, d *plugin.QueryData, h *p
 
 	conn, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("listOrganizationRepositories", "connection_error", err)
+		plugin.Logger(ctx).Error("sentry_organization_repository.listOrganizationRepositories", "connection_error", err)
 		return nil, err
 	}
 
@@ -106,7 +114,7 @@ func listOrganizationRepositories(ctx context.Context, d *plugin.QueryData, h *p
 	for {
 		repositoryList, resp, err := conn.OrganizationRepositories.List(ctx, *org.Slug, params)
 		if err != nil {
-			plugin.Logger(ctx).Error("listOrganizationRepositories", "api_error", err)
+			plugin.Logger(ctx).Error("sentry_organization_repository.listOrganizationRepositories", "api_error", err)
 			return nil, err
 		}
 		for _, repository := range repositoryList {
