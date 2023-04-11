@@ -90,7 +90,7 @@ func tableSentryTeam(ctx context.Context) *plugin.Table {
 				Name:        "title",
 				Description: "Title of the resource.",
 				Type:        proto.ColumnType_STRING,
-				Transform:   transform.FromField("name"),
+				Transform:   transform.FromField("Name"),
 			},
 		},
 	}
