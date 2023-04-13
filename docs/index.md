@@ -2,7 +2,7 @@
 organization: Turbot
 category: ["software development"]
 icon_url: "/images/plugins/turbot/sentry.svg"
-brand_color: "#FAF9F6"
+brand_color: "#362d59"
 display_name: "Sentry"
 short_name: "sentry"
 description: "Steampipe plugin for Sentry."
