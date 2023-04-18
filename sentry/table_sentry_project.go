@@ -232,13 +232,13 @@ func tableSentryProject(ctx context.Context) *plugin.Table {
 func listProjects(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	conn, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("listProjects", "connection_error", err)
+		plugin.Logger(ctx).Error("sentry_project.listProjects", "connection_error", err)
 		return nil, err
 	}
 
 	projects, _, err := conn.Projects.List(ctx)
 	if err != nil {
-		plugin.Logger(ctx).Error("listProjects", "api_error", err)
+		plugin.Logger(ctx).Error("sentry_project.listProjects", "api_error", err)
 		return nil, err
 	}
 
@@ -255,8 +255,8 @@ func listProjects(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDat
 }
 
 func getProject(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
-	slug := d.EqualsQuals["slug"].GetStringValue()
-	organization_slug := d.EqualsQuals["organization_slug"].GetStringValue()
+	slug := d.EqualsQualString("slug")
+	organization_slug := d.EqualsQualString("organization_slug")
 
 	// Check if slug or organization_slug is empty.
 	if slug == "" || organization_slug == "" {
@@ -265,13 +265,13 @@ func getProject(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData)
 
 	conn, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("getProject", "connection_error", err)
+		plugin.Logger(ctx).Error("sentry_project.getProject", "connection_error", err)
 		return nil, err
 	}
 
 	org, _, err := conn.Projects.Get(ctx, organization_slug, slug)
 	if err != nil {
-		plugin.Logger(ctx).Error("getProject", "api_error", err)
+		plugin.Logger(ctx).Error("sentry_project.getProject", "api_error", err)
 		return nil, err
 	}
 
@@ -283,20 +283,20 @@ func getProjectFilters(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 
 	conn, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("getProjectFilters", "connection_error", err)
+		plugin.Logger(ctx).Error("sentry_project.getProjectFilters", "connection_error", err)
 		return nil, err
 	}
 
 	filters, _, err := conn.ProjectFilter.Get(ctx, *project.Organization.Slug, project.Slug)
 	if err != nil {
-		plugin.Logger(ctx).Error("getProjectFilters", "api_error", err)
+		plugin.Logger(ctx).Error("sentry_project.getProjectFilters", "api_error", err)
 		return nil, err
 	}
 
 	return filters, nil
 }
 
-func orgToSlug(ctx context.Context, d *transform.TransformData) (interface{}, error) {
+func orgToSlug(_ context.Context, d *transform.TransformData) (interface{}, error) {
 	if d.Value == nil {
 		return nil, nil
 	}

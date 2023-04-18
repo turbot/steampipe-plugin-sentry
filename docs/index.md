@@ -5,7 +5,7 @@ icon_url: "/images/plugins/turbot/sentry.svg"
 brand_color: "#362D59"
 display_name: "Sentry"
 short_name: "sentry"
-description: "Steampipe plugin for Sentry."
+description: "Steampipe plugin to query organizations, projects, teams and more from Sentry."
 og_description: "Query Sentry with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/sentry-social-graphic.png"
 ---
@@ -54,11 +54,11 @@ steampipe plugin install sentry
 
 ### Credentials
 
-| Item        | Description                                                                                                                                                             |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Credentials | Aiven requires an [Auth Token](https://docs.sentry.io/api/auth/) for all requests.                          |
-| Permissions | Auth tokens have the same permissions as the user who creates them, and if the user permissions change, the Auth token permissions also change.                               |
-| Radius      | Each connection represents a single Sentry Installation.                                                                                                                 |
+| Item        | Description                                                                                                                                                                    |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Credentials | Aiven requires an [Auth Token](https://docs.sentry.io/api/auth/) for all requests.                                                                                             |
+| Permissions | Auth tokens have the same permissions as the user who creates them, and if the user permissions change, the Auth token permissions also change.                                |
+| Radius      | Each connection represents a single Sentry Installation.                                                                                                                       |
 | Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/sentry.spc`)<br />2. Credentials specified in environment variables, e.g., `SENTRY_AUTH_TOKEN`. |
 
 ### Configuration
@@ -72,13 +72,14 @@ connection "sentry" {
   plugin = "sentry"
 
   # `auth_token` - Create an authentication token in the Sentry Console for use.
-  # Console path - settings -> account -> api -> auth-tokens
+  # For more information on the Auth Token, please see https://docs.sentry.io/api/auth/.
   # Can also be set with the SENTRY_AUTH_TOKEN environment variable.
   # auth_token = "de70c93ecc594a0eb52463bd8f1e6d0b203615621e724762b3e5a9d82be291e9xfWdDNqwZPngS"
 
   # If no credentials are specified, the plugin will use Sentry CLI authentication.
 }
 ```
+
 ## Configuring Sentry Credentials
 
 ### Authentication Token Credentials
@@ -88,7 +89,7 @@ You may specify the Auth Token to authenticate:
 - `auth_token`: Specify the authentication token.
 
 ```hcl
-connection "sentry_via_auth_token" {
+connection "sentry" {
   plugin   = "sentry"
   auth_token  = "de70c93ecc594a0eb52463bd8f1e6d0b203615621e724762b3e5a9d82be291e9xfWdDNqwZPngS"
 }

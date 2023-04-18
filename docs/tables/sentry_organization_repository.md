@@ -1,6 +1,6 @@
 # Table: sentry_organization_repository
 
-Represent a list of version control repositories for a given organization.
+Represents a list of version control repositories for a given organization.
 
 ## Examples
 

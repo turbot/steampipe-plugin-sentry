@@ -93,7 +93,7 @@ type OrganizationRepository struct {
 
 func listOrganizationRepositories(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	org := h.Item.(*sentry.Organization)
-	orgSlug := d.EqualsQuals["organization_slug"].GetStringValue()
+	orgSlug := d.EqualsQualString("organization_slug")
 
 	// check if the provided orgSlug is not matching with the parentHydrate
 	if orgSlug != "" && orgSlug != *org.Slug {
@@ -108,7 +108,7 @@ func listOrganizationRepositories(ctx context.Context, d *plugin.QueryData, h *p
 
 	params := &sentry.ListOrganizationRepositoriesParams{}
 	if d.EqualsQuals["status"] != nil {
-		params.Status = d.EqualsQuals["status"].GetStringValue()
+		params.Status = d.EqualsQualString("status")
 	}
 
 	for {

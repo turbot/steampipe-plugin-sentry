@@ -84,7 +84,7 @@ from
   sentry_metric_alert,
   jsonb_array_elements(triggers) as t
 where
-  name = 'test-metric';
+  name = 'alert-metric';
 ```
 
 ### List alerts older than a month

@@ -130,7 +130,7 @@ type IssueAlert struct {
 
 func listIssueAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	project := h.Item.(*sentry.Project)
-	projectSlug := d.EqualsQuals["project_slug"].GetStringValue()
+	projectSlug := d.EqualsQualString("project_slug")
 
 	// check if the provided projectSlug is not matching with the parentHydrate
 	if projectSlug != "" && projectSlug != project.Slug {
@@ -170,9 +170,9 @@ func listIssueAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 }
 
 func getIssueAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
-	orgSlug := d.EqualsQuals["organization_slug"].GetStringValue()
-	projectSlug := d.EqualsQuals["project_slug"].GetStringValue()
-	id := d.EqualsQuals["id"].GetStringValue()
+	orgSlug := d.EqualsQualString("organization_slug")
+	projectSlug := d.EqualsQualString("project_slug")
+	id := d.EqualsQualString("id")
 
 	// Check if orgSlug or projectSlug or id is empty.
 	if orgSlug == "" || projectSlug == "" || id == "" {

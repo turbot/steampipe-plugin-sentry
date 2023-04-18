@@ -118,7 +118,7 @@ type OrganizationMember struct {
 
 func listOrganizationMembers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	org := h.Item.(*sentry.Organization)
-	orgSlug := d.EqualsQuals["organization_slug"].GetStringValue()
+	orgSlug := d.EqualsQualString("organization_slug")
 
 	// check if the provided orgSlug is not matching with the parentHydrate
 	if orgSlug != "" && orgSlug != *org.Slug {
@@ -157,8 +157,8 @@ func listOrganizationMembers(ctx context.Context, d *plugin.QueryData, h *plugin
 }
 
 func getOrganizationMember(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
-	orgSlug := d.EqualsQuals["organization_slug"].GetStringValue()
-	memberId := d.EqualsQuals["id"].GetStringValue()
+	orgSlug := d.EqualsQualString("organization_slug")
+	memberId := d.EqualsQualString("id")
 
 	// Check if orgSlug or memberId is empty.
 	if orgSlug == "" || memberId == "" {

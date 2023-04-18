@@ -103,7 +103,7 @@ type Team struct {
 
 func listTeams(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	org := h.Item.(*sentry.Organization)
-	orgSlug := d.EqualsQuals["organization_slug"].GetStringValue()
+	orgSlug := d.EqualsQualString("organization_slug")
 
 	// check if the provided orgSlug is not matching with the parentHydrate
 	if orgSlug != "" && orgSlug != *org.Slug {
@@ -135,8 +135,8 @@ func listTeams(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 }
 
 func getTeam(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
-	orgSlug := d.EqualsQuals["organization_slug"].GetStringValue()
-	slug := d.EqualsQuals["slug"].GetStringValue()
+	orgSlug := d.EqualsQualString("organization_slug")
+	slug := d.EqualsQualString("slug")
 
 	// Check if orgSlug or slug is empty.
 	if orgSlug == "" || slug == "" {

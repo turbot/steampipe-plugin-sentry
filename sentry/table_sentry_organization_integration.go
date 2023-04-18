@@ -119,7 +119,7 @@ type OrganizationIntegration struct {
 
 func listOrganizationIntegrations(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	org := h.Item.(*sentry.Organization)
-	orgSlug := d.EqualsQuals["organization_slug"].GetStringValue()
+	orgSlug := d.EqualsQualString("organization_slug")
 
 	// check if the provided orgSlug is not matching with the parentHydrate
 	if orgSlug != "" && orgSlug != *org.Slug {
@@ -134,7 +134,7 @@ func listOrganizationIntegrations(ctx context.Context, d *plugin.QueryData, h *p
 
 	params := &sentry.ListOrganizationIntegrationsParams{}
 	if d.EqualsQuals["provider_key"] != nil {
-		params.ProviderKey = d.EqualsQuals["provider_key"].GetStringValue()
+		params.ProviderKey = d.EqualsQualString("provider_key")
 	}
 
 	for {

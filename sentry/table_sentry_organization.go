@@ -131,17 +131,17 @@ func tableSentryOrganization(ctx context.Context) *plugin.Table {
 			{
 				Name:        "require_email_verification",
 				Type:        proto.ColumnType_BOOL,
-				Description: "Check if the organization require email verification.",
+				Description: "Check if the organization requires email verification.",
 			},
 			{
 				Name:        "scrape_java_script",
 				Type:        proto.ColumnType_BOOL,
-				Description: "Check if the organization scrape java script.",
+				Description: "Check if the organization scrapes java script.",
 			},
 			{
 				Name:        "scrub_ip_addresses",
 				Type:        proto.ColumnType_BOOL,
-				Description: "Check if the organization scrub IP addresses.",
+				Description: "Check if the organization scrubs IP addresses.",
 				Transform:   transform.FromField("ScrubIPAddresses"),
 			},
 			{
@@ -234,7 +234,7 @@ func listOrganizations(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 }
 
 func getOrganization(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
-	slug := d.EqualsQuals["slug"].GetStringValue()
+	slug := d.EqualsQualString("slug")
 
 	// Check if slug is empty.
 	if slug == "" {

@@ -73,7 +73,7 @@ select
 from
   sentry_issue_alert
 where
-  name = 'test';
+  name = 'alert1';
 ```
 
 ### List alerts older than a month

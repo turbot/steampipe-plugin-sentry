@@ -1,6 +1,6 @@
 # Table: sentry_organization
 
-Represent a list of organizations available to the authenticated session.
+Represents a list of organizations available to the authenticated session.
 
 ## Examples
 
@@ -92,5 +92,5 @@ select
 from
   sentry_organization
 where
-  slug = 'test';
+  slug = 'myorg';
 ```

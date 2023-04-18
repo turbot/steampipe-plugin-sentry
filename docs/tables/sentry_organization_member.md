@@ -1,6 +1,6 @@
 # Table: sentry_organization_member
 
-Represent a list of users that belong to a given organization.
+Represents a list of users that belong to a particular organization.
 
 ## Examples
 
@@ -63,7 +63,7 @@ select
 from
   sentry_organization_member
 where
-  organization_slug = 'test';
+  organization_slug = 'myorg';
 ```
 
 ### List members of a particular team
@@ -121,6 +121,6 @@ where
       sentry_project,
       jsonb_array_elements(teams) as t
     where
-      name = 'test-project'
+      name = 'project1'
   );
 ```

@@ -63,7 +63,7 @@ func tableSentryKey(ctx context.Context) *plugin.Table {
 			{
 				Name:        "project_id",
 				Type:        proto.ColumnType_INT,
-				Description: "The ID of the project the keys belong to.",
+				Description: "The ID of the project the keys belongs to.",
 				Transform:   transform.FromField("ProjectID"),
 			},
 			{
@@ -101,7 +101,7 @@ type ProjectKey struct {
 
 func listKeys(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	project := h.Item.(*sentry.Project)
-	projectSlug := d.EqualsQuals["project_slug"].GetStringValue()
+	projectSlug := d.EqualsQualString("project_slug")
 
 	// check if the provided projectSlug is not matching with the parentHydrate
 	if projectSlug != "" && projectSlug != project.Slug {

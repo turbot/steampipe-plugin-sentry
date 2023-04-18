@@ -42,7 +42,7 @@ func tableSentryMetricAlert(ctx context.Context) *plugin.Table {
 			{
 				Name:        "owner",
 				Type:        proto.ColumnType_STRING,
-				Description: "Specifies the owner id of this metric alert rule.",
+				Description: "Specifies the owner ID of this metric alert rule.",
 			},
 			{
 				Name:        "organization_slug",
@@ -135,7 +135,7 @@ type MetricAlert struct {
 
 func listMetricAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	project := h.Item.(*sentry.Project)
-	projectSlug := d.EqualsQuals["project_slug"].GetStringValue()
+	projectSlug := d.EqualsQualString("project_slug")
 
 	// check if the provided projectSlug is not matching with the parentHydrate
 	if projectSlug != "" && projectSlug != project.Slug {
@@ -175,9 +175,9 @@ func listMetricAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 }
 
 func getMetricAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
-	orgSlug := d.EqualsQuals["organization_slug"].GetStringValue()
-	projectSlug := d.EqualsQuals["project_slug"].GetStringValue()
-	id := d.EqualsQuals["id"].GetStringValue()
+	orgSlug := d.EqualsQualString("organization_slug")
+	projectSlug := d.EqualsQualString("project_slug")
+	id := d.EqualsQualString("id")
 
 	// Check if orgSlug or projectSlug or id is empty.
 	if orgSlug == "" || projectSlug == "" || id == "" {

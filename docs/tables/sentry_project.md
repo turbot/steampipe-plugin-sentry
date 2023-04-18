@@ -67,7 +67,7 @@ select
 from
   sentry_project
 where
-  organization_slug = 'test';
+  organization_slug = 'myorg';
 ```
 
 ### List internal projects
@@ -100,5 +100,5 @@ from
   sentry_project,
   jsonb_array_elements(teams) as t
 where
-  slug = 'test';
+  slug = 'myproj';
 ```

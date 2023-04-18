@@ -1,6 +1,6 @@
 # Table: sentry_key
 
-Represent a list of client keys bound to a project.
+Represents a list of client keys bound to a project.
 
 ## Examples
 
