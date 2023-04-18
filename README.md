@@ -11,25 +11,33 @@ Use SQL to query organizations, projects, teams and more from Sentry.
 
 ## Quick start
 
-Install the plugin with [Steampipe](https://steampipe.io):
+Download and install the latest Sentry plugin:
 
-```shell
+```bash
 steampipe plugin install sentry
 ```
 
-Configure different methods for authentication in `~/.steampipe/config/sentry.spc`:
+Configure your [credentials](https://hub.steampipe.io/plugins/turbot/sentry#credentials) and [config file](https://hub.steampipe.io/plugins/turbot/sentry#configuration).
+
+### Configuring Sentry Credentials
+
+Configure your account details in `~/.steampipe/config/sentry.spc`:
+
+You may specify the Auth Token to authenticate:
+
+- `auth_token`: Specify the authentication token.
 
 ```hcl
-connection "sentry" {
-  plugin = "sentry"
-
-  # `auth_token` - Create an authentication token in the Sentry Console for use.
-  # Console path - settings -> account -> api -> auth-tokens
-  # Can also be set with the SENTRY_AUTH_TOKEN environment variable.
-  # auth_token = "de70c93ecc594a0eb52463bd8f1e6d0b203615621e724762b3e5a9d82be291e9xfWdDNqwZPngS"
-
-  # If no credentials are specified, the plugin will use Sentry CLI authentication.
+connection "sentry_via_auth_token" {
+  plugin   = "sentry"
+  auth_token  = "de70c93ecc594a0eb52463bd8f1e6d0b203615621e724762b3e5a9d82be291e9xfWdDNqwZPngS"
 }
+```
+
+or through environment variables
+
+```sh
+export SENTRY_AUTH_TOKEN="de70c93ecc594a0eb52463bd8f1e6d0b203615621e724762b3e5a9d82be291e9xfWdDNqwZPngS"
 ```
 
 Run steampipe:
@@ -38,7 +46,7 @@ Run steampipe:
 steampipe query
 ```
 
-Query your organization:
+List your Sentry organizations:
 
 ```sql
 select

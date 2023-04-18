@@ -37,6 +37,13 @@ func GetConfig(connection *plugin.Connection) sentryConfig {
 }
 
 func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error) {
+
+	// Load connection from cache, which preserves throttling protection etc
+	cacheKey := "sentry"
+	if cachedData, ok := d.ConnectionManager.Cache.Get(cacheKey); ok {
+		return cachedData.(*sentry.Client), nil
+	}
+
 	sentryConfig := GetConfig(d.Connection)
 
 	authToken := os.Getenv("SENTRY_AUTH_TOKEN")
@@ -52,6 +59,9 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error)
 		httpClient := oauth2.NewClient(ctx, tokenSrc)
 
 		client := sentry.NewClient(httpClient)
+
+		// Save to cache
+		d.ConnectionManager.Cache.Set(cacheKey, client)
 
 		return client, nil
 	} else { // Authenticate with CLI
@@ -77,6 +87,9 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error)
 			httpClient := oauth2.NewClient(ctx, tokenSrc)
 
 			client := sentry.NewClient(httpClient)
+
+			// Save to cache
+			d.ConnectionManager.Cache.Set(cacheKey, client)
 
 			return client, nil
 		}

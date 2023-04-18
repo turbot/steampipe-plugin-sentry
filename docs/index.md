@@ -2,7 +2,7 @@
 organization: Turbot
 category: ["software development"]
 icon_url: "/images/plugins/turbot/sentry.svg"
-brand_color: "#362d59"
+brand_color: "#362D59"
 display_name: "Sentry"
 short_name: "sentry"
 description: "Steampipe plugin for Sentry."
@@ -12,11 +12,11 @@ og_image: "/images/plugins/turbot/sentry-social-graphic.png"
 
 # Sentry + Steampipe
 
-[Steampipe](https://steampipe.io) is an open source CLI to instantly query cloud APIs using SQL.
-
 [Sentry](https://sentry.io) is a developer-first error tracking and performance monitoring platform that helps developers see what actually matters, solve quicker, and learn continuously about their applications.
 
-For example:
+[Steampipe](https://steampipe.io) is an open source CLI to instantly query cloud APIs using SQL.
+
+List your Sentry organizations:
 
 ```sql
 select
@@ -42,19 +42,30 @@ from
 
 - **[Table definitions & examples →](/plugins/turbot/sentry/tables)**
 
-## Get started
+## Quick start
 
 ### Install
 
 Download and install the latest Sentry plugin:
 
-```bash
+```sh
 steampipe plugin install sentry
 ```
+
+### Credentials
+
+| Item        | Description                                                                                                                                                             |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Credentials | Aiven requires an [Auth Token](https://docs.sentry.io/api/auth/) for all requests.                          |
+| Permissions | Auth tokens have the same permissions as the user who creates them, and if the user permissions change, the Auth token permissions also change.                               |
+| Radius      | Each connection represents a single Sentry Installation.                                                                                                                 |
+| Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/sentry.spc`)<br />2. Credentials specified in environment variables, e.g., `SENTRY_AUTH_TOKEN`. |
 
 ### Configuration
 
 Installing the latest sentry plugin will create a config file (`~/.steampipe/config/sentry.spc`) with a single connection named `sentry`:
+
+Configure your account details in `~/.steampipe/config/sentry.spc`:
 
 ```hcl
 connection "sentry" {
@@ -68,6 +79,7 @@ connection "sentry" {
   # If no credentials are specified, the plugin will use Sentry CLI authentication.
 }
 ```
+## Configuring Sentry Credentials
 
 ### Authentication Token Credentials
 
