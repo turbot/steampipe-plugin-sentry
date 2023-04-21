@@ -103,12 +103,6 @@ The Sentry plugin will use the Sentry environment variable to obtain credentials
 export SENTRY_AUTH_TOKEN="de70c93ecc594a0eb52463bd8f1e6d0b203615621e724762b3e5a9d82be291e9xfWdDNqwZPngS"
 ```
 
-```hcl
-connection "sentry" {
-  plugin = "sentry"
-}
-```
-
 ### Sentry CLI
 
 If no credentials are specified and the environment variables are not set, the plugin will use the active credentials from the Sentry CLI. You can run `sentry-cli login` to set up these credentials.
