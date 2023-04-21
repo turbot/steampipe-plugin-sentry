@@ -56,7 +56,7 @@ steampipe plugin install sentry
 
 | Item        | Description                                                                                                                                                                    |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Credentials | Aiven requires an [Auth Token](https://docs.sentry.io/api/auth/) for all requests.                                                                                             |
+| Credentials | Sentry requires an [Auth Token](https://docs.sentry.io/api/auth/) for all requests.                                                                                             |
 | Permissions | Auth tokens have the same permissions as the user who creates them, and if the user permissions change, the Auth token permissions also change.                                |
 | Radius      | Each connection represents a single Sentry Installation.                                                                                                                       |
 | Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/sentry.spc`)<br />2. Credentials specified in environment variables, e.g., `SENTRY_AUTH_TOKEN`. |

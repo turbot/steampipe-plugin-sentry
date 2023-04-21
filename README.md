@@ -40,6 +40,14 @@ or through environment variables
 export SENTRY_AUTH_TOKEN="de70c93ecc594a0eb52463bd8f1e6d0b203615621e724762b3e5a9d82be291e9xfWdDNqwZPngS"
 ```
 
+or through the active credentials from the Sentry CLI. You can run `sentry-cli login` to set up these credentials.
+
+```hcl
+connection "sentry" {
+  plugin = "sentry"
+}
+```
+
 Run steampipe:
 
 ```shell
