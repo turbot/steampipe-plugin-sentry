@@ -74,7 +74,7 @@ where
   member_count = 0;
 ```
 
-### List teams without role
+### List teams without an assigned role
 
 ```sql
 select

@@ -58,7 +58,7 @@ from
   sentry_team as t
 where
   t.id = split_part(a.owner,':',2)
-  and t.name = 'test';
+  and t.name = 'Team A';
 ```
 
 ### Show list of actions of a particular alert
