@@ -28,7 +28,7 @@ You may specify the Auth Token to authenticate:
 - `auth_token`: Specify the authentication token.
 
 ```hcl
-connection "sentry_via_auth_token" {
+connection "sentry" {
   plugin   = "sentry"
   auth_token  = "de70c93ecc594a0eb52463bd8f1e6d0b203615621e724762b3e5a9d82be291e9xfWdDNqwZPngS"
 }
