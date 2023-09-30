@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/jianyuan/go-sentry/v2 v2.4.0
-	github.com/turbot/steampipe-plugin-sdk/v5 v5.6.0
+	github.com/turbot/steampipe-plugin-sdk/v5 v5.6.1
 	golang.org/x/oauth2 v0.10.0
 )
 
