@@ -15,10 +15,14 @@ import (
 
 type sentryConfig struct {
 	AuthToken *string `cty:"auth_token"`
+	BaseUrl *string `cty:"baseurl"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{
 	"auth_token": {
+		Type: schema.TypeString,
+	},
+	"baseurl": {
 		Type: schema.TypeString,
 	},
 }
@@ -47,9 +51,29 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error)
 	sentryConfig := GetConfig(d.Connection)
 
 	authToken := os.Getenv("SENTRY_AUTH_TOKEN")
+	baseUrl := os.Getenv("SENTRY_URL")
+
+	if sentryConfig.BaseUrl != nil {
+		baseUrl= *sentryConfig.BaseUrl
+	}
 
 	if sentryConfig.AuthToken != nil {
 		authToken = *sentryConfig.AuthToken
+	}
+
+	if baseUrl != "" {
+		tokenSrc := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: authToken},
+		)
+		httpClient := oauth2.NewClient(ctx, tokenSrc)
+
+		client, nil := sentry.NewOnPremiseClient(baseUrl, httpClient)
+
+		// Save to cache
+		d.ConnectionManager.Cache.Set(cacheKey, client)
+
+		return client, nil
+		// Authenticate with AuthToken
 	}
 
 	if authToken != "" { // Authenticate with AuthToken

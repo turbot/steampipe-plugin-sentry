@@ -77,6 +77,10 @@ connection "sentry" {
   # auth_token = "de70c93ecc594a0eb52463bd8f1e6d0b203615621e724762b3e5a9d82be291e9xfWdDNqwZPngS"
 
   # If no credentials are specified, the plugin will use Sentry CLI authentication.
+
+  # `baseurl` - The baseUrl of your Sentry Instance
+  # Can also be set with the SENTRY_URL environment variable.
+  # baseurl = "https://sentry.company.com/"
 }
 ```
 
@@ -101,6 +105,7 @@ The Sentry plugin will use the Sentry environment variable to obtain credentials
 
 ```sh
 export SENTRY_AUTH_TOKEN="de70c93ecc594a0eb52463bd8f1e6d0b203615621e724762b3e5a9d82be291e9xfWdDNqwZPngS"
+export SENTRY_URL="https://sentry.company.com/"
 ```
 
 ### Sentry CLI
