@@ -27,6 +27,10 @@ var ConfigSchema = map[string]*schema.Attribute{
 	},
 }
 
+var (
+	err error
+)
+
 func ConfigInstance() interface{} {
 	return &sentryConfig{}
 }
@@ -61,21 +65,6 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error)
 		authToken = *sentryConfig.AuthToken
 	}
 
-	if baseUrl != "" {
-		tokenSrc := oauth2.StaticTokenSource(
-			&oauth2.Token{AccessToken: authToken},
-		)
-		httpClient := oauth2.NewClient(ctx, tokenSrc)
-
-		client, nil := sentry.NewOnPremiseClient(baseUrl, httpClient)
-
-		// Save to cache
-		d.ConnectionManager.Cache.Set(cacheKey, client)
-
-		return client, nil
-		// Authenticate with AuthToken
-	}
-
 	if authToken != "" { // Authenticate with AuthToken
 		tokenSrc := oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: authToken},
@@ -83,6 +72,9 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error)
 		httpClient := oauth2.NewClient(ctx, tokenSrc)
 
 		client := sentry.NewClient(httpClient)
+		if baseUrl != "" {
+			client, err = sentry.NewOnPremiseClient(baseUrl, httpClient)
+		}
 
 		// Save to cache
 		d.ConnectionManager.Cache.Set(cacheKey, client)
