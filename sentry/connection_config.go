@@ -77,6 +77,10 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error)
 		httpClient := oauth2.NewClient(ctx, tokenSrc)
 
 		client, err := sentry.NewOnPremiseClient(baseUrl, httpClient)
+		if err != nil {
+			plugin.Logger(ctx).Error("getClient", "client_error", err)
+			return nil, err
+		}
 
 		// Save to cache
 		d.ConnectionManager.Cache.Set(cacheKey, client)
