@@ -15,13 +15,22 @@ import (
 
 type sentryConfig struct {
 	AuthToken *string `cty:"auth_token"`
+	BaseUrl *string `cty:"base_url"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{
 	"auth_token": {
 		Type: schema.TypeString,
 	},
+	"base_url": {
+		Type: schema.TypeString,
+	},
 }
+
+const (
+	defaultBaseURL = "https://sentry.io/api/"
+)
+
 
 func ConfigInstance() interface{} {
 	return &sentryConfig{}
@@ -47,9 +56,18 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error)
 	sentryConfig := GetConfig(d.Connection)
 
 	authToken := os.Getenv("SENTRY_AUTH_TOKEN")
+	baseUrl := os.Getenv("SENTRY_URL")
+
+	if sentryConfig.BaseUrl != nil {
+		baseUrl= *sentryConfig.BaseUrl
+	}
 
 	if sentryConfig.AuthToken != nil {
 		authToken = *sentryConfig.AuthToken
+	}
+
+	if baseUrl == "" {
+		baseUrl = defaultBaseURL
 	}
 
 	if authToken != "" { // Authenticate with AuthToken
@@ -58,11 +76,16 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error)
 		)
 		httpClient := oauth2.NewClient(ctx, tokenSrc)
 
-		client := sentry.NewClient(httpClient)
+		client, err := sentry.NewOnPremiseClient(baseUrl, httpClient)
+		if err != nil {
+			plugin.Logger(ctx).Error("getClient", "client_error", err)
+			return nil, err
+		}
 
 		// Save to cache
 		d.ConnectionManager.Cache.Set(cacheKey, client)
-
+                
+		plugin.Logger(ctx).Error("getClient", "client_error", err)
 		return client, nil
 	} else { // Authenticate with CLI
 		home, _ := os.UserHomeDir()
