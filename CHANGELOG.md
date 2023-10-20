@@ -1,3 +1,9 @@
+## v0.2.0 [2023-10-20]
+
+_What's new?_
+
+- The Sentry base URL can now be set through the `base_url` config argument or `SENTRY_URL` environment variable. ([#11](https://github.com/turbot/steampipe-plugin-sentry/pull/11)) (Thanks [@beudbeud](https://github.com/beudbeud) for the contribution!)
+
 ## v0.1.1 [2023-10-05]
 
 _Dependencies_
