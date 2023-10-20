@@ -15,7 +15,7 @@ import (
 
 type sentryConfig struct {
 	AuthToken *string `cty:"auth_token"`
-	BaseUrl *string `cty:"base_url"`
+	BaseUrl   *string `cty:"base_url"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{
@@ -30,7 +30,6 @@ var ConfigSchema = map[string]*schema.Attribute{
 const (
 	defaultBaseURL = "https://sentry.io/api/"
 )
-
 
 func ConfigInstance() interface{} {
 	return &sentryConfig{}
@@ -59,7 +58,7 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error)
 	baseUrl := os.Getenv("SENTRY_URL")
 
 	if sentryConfig.BaseUrl != nil {
-		baseUrl= *sentryConfig.BaseUrl
+		baseUrl = *sentryConfig.BaseUrl
 	}
 
 	if sentryConfig.AuthToken != nil {
@@ -84,8 +83,6 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error)
 
 		// Save to cache
 		d.ConnectionManager.Cache.Set(cacheKey, client)
-                
-		plugin.Logger(ctx).Error("getClient", "client_error", err)
 		return client, nil
 	} else { // Authenticate with CLI
 		home, _ := os.UserHomeDir()

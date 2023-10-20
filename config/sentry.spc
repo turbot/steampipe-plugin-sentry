@@ -8,7 +8,8 @@ connection "sentry" {
 
   # If no credentials are specified, the plugin will use Sentry CLI authentication.
 
-  # `base_url` - The base URL of your Sentry Instance.
+  # `base_url` - The base URL of your Sentry instance. (Optional)
   # Can also be set with the SENTRY_URL environment variable.
+  # Defaults to https://sentry.io/api/
   # base_url = "https://sentry.company.com/"
 }
