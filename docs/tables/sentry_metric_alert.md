@@ -1,20 +1,20 @@
-# Table: sentry_metric_alert
+---
+title: "Steampipe Table: sentry_metric_alert - Query Sentry Metric Alerts using SQL"
+description: "Allows users to query Metric Alerts in Sentry, specifically the alert rules and their triggers, providing insights into application error tracking and notifications."
+---
 
-Metric alerts trigger when a metric is breached for either error or transaction events. Use metric alerts to monitor a finite and known set of metrics and components you care about, such as error frequency or performance metrics in your entire project, on important pages, or with specific tags.
+# Table: sentry_metric_alert - Query Sentry Metric Alerts using SQL
 
-Create alerts to monitor metrics, such as:
+Sentry is an open-source error tracking system that helps developers monitor and fix crashes in real time. It provides complete stack traces, tells you how many times an error occurred, and shows the affected user count. A Metric Alert in Sentry is a rule that triggers notifications when a specific metric (like the count of a certain type of event) goes beyond a defined threshold.
 
-- Total errors in your project
-- Latency: min, max, average, percentile
-- Failure rate
-- Crash free session or user rate for monitoring release health
-- Custom metrics
+## Table Usage Guide
 
-You can find a full list of available metric alerts in [Metric Alerts](https://docs.sentry.io/product/alerts/alert-types/#metric-alerts).
+The `sentry_metric_alert` table provides insights into Metric Alerts within Sentry's error tracking system. As a developer or DevOps engineer, explore alert-specific details through this table, including alert rules, their triggers, and associated metadata. Utilize it to uncover information about alerts, such as those triggered by certain types of events, the thresholds defined for alerts, and the actions taken when alerts are triggered.
 
 ## Examples
 
 ### Basic info
+Explore which metric alerts have been created within your organization, allowing you to identify instances where specific alerts may need to be updated or adjusted. This is particularly useful for maintaining optimal performance and ensuring timely responses to any issues or anomalies.
 
 ```sql
 select
@@ -31,6 +31,7 @@ from
 ```
 
 ### List alerts for a particular project
+Explore which alerts are associated with a specific project to better manage and respond to issues. This can provide crucial insights to maintain project health and efficiency.
 
 ```sql
 select
@@ -49,6 +50,7 @@ where
 ```
 
 ### List alerts owned by a particular team
+Explore which alerts are managed by a specific team to better understand the distribution of responsibilities and ownership within your organization. This can be particularly useful in large organizations where multiple teams are managing different sets of alerts.
 
 ```sql
 select
@@ -69,6 +71,7 @@ where
 ```
 
 ### Show list of triggers of a particular alert
+Explore the different triggers associated with a specific alert to understand their thresholds and actions. This can help in assessing the alert's sensitivity and response strategy.
 
 ```sql
 select
@@ -88,6 +91,7 @@ where
 ```
 
 ### List alerts older than a month
+Explore which alerts have been active for longer than a month to assess areas that may require attention or review. This can help identify lingering issues within your project or organization that have not been resolved.
 
 ```sql
 select
