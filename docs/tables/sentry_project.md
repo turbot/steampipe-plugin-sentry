@@ -16,7 +16,20 @@ The `sentry_project` table provides insights into projects within Sentry. As a d
 ### Basic info
 Discover the segments that have access and are public within a certain platform. This is useful in assessing the status and understanding the accessibility of projects within a given platform.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  status,
+  slug,
+  has_access,
+  is_public,
+  platform
+from
+  sentry_project;
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -32,7 +45,7 @@ from
 ### List public projects
 Explore which projects are publicly accessible, enabling you to identify potential security risks or areas for collaboration.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -47,10 +60,40 @@ where
   is_public;
 ```
 
+```sql+sqlite
+select
+  id,
+  name,
+  status,
+  slug,
+  has_access,
+  is_public,
+  platform
+from
+  sentry_project
+where
+  is_public = 1;
+```
+
 ### List go based projects
 Explore which projects are based on the 'Go' programming language. This is useful to identify and manage projects that are using this specific platform.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  status,
+  slug,
+  has_access,
+  is_public,
+  platform
+from
+  sentry_project
+where
+  platform = 'go';
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -68,7 +111,22 @@ where
 ### List projects of a particular organization
 Determine the areas in which a specific organization has projects. This can be useful to gain insights into the project status, access details, and platform usage within the organization.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  status,
+  slug,
+  has_access,
+  is_public,
+  platform
+from
+  sentry_project
+where
+  organization_slug = 'myorg';
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -86,7 +144,7 @@ where
 ### List internal projects
 Discover the segments that are classified as internal projects within your organizational structure. This allows you to assess the elements within your organization that are not public-facing, aiding in strategic planning and resource allocation.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -101,10 +159,25 @@ where
   is_internal;
 ```
 
+```sql+sqlite
+select
+  id,
+  name,
+  status,
+  slug,
+  has_access,
+  is_public,
+  platform
+from
+  sentry_project
+where
+  is_internal = 1;
+```
+
 ### List teams of a particular project
 Determine the teams associated with a specific project to understand their roles and contributions. This is useful for project management and resource allocation.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -114,6 +187,20 @@ select
 from
   sentry_project,
   jsonb_array_elements(teams) as t
+where
+  slug = 'myproj';
+```
+
+```sql+sqlite
+select
+  id,
+  name,
+  json_extract(t.value, '$.id') as team_id,
+  json_extract(t.value, '$.name') as team_name,
+  json_extract(t.value, '$.slug') as team_slug
+from
+  sentry_project,
+  json_each(teams) as t
 where
   slug = 'myproj';
 ```

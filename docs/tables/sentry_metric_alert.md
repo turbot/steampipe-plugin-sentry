@@ -16,7 +16,21 @@ The `sentry_metric_alert` table provides insights into Metric Alerts within Sent
 ### Basic info
 Explore which metric alerts have been created within your organization, allowing you to identify instances where specific alerts may need to be updated or adjusted. This is particularly useful for maintaining optimal performance and ensuring timely responses to any issues or anomalies.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  owner,
+  organization_slug,
+  project_slug,
+  aggregate,
+  data_set,
+  date_created
+from
+  sentry_metric_alert;
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -33,7 +47,23 @@ from
 ### List alerts for a particular project
 Explore which alerts are associated with a specific project to better manage and respond to issues. This can provide crucial insights to maintain project health and efficiency.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  owner,
+  organization_slug,
+  project_slug,
+  aggregate,
+  data_set,
+  date_created
+from
+  sentry_metric_alert
+where
+  project_slug = 'go';
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -52,7 +82,7 @@ where
 ### List alerts owned by a particular team
 Explore which alerts are managed by a specific team to better understand the distribution of responsibilities and ownership within your organization. This can be particularly useful in large organizations where multiple teams are managing different sets of alerts.
 
-```sql
+```sql+postgres
 select
   a.id,
   a.name,
@@ -70,10 +100,14 @@ where
   and t.name = 'Team A';
 ```
 
+```sql+sqlite
+Error: SQLite does not support split_part function.
+```
+
 ### Show list of triggers of a particular alert
 Explore the different triggers associated with a specific alert to understand their thresholds and actions. This can help in assessing the alert's sensitivity and response strategy.
 
-```sql
+```sql+postgres
 select
   t ->> 'id' as id,
   t ->> 'alertRuleId' as alert_rule_id,
@@ -90,10 +124,27 @@ where
   name = 'alert-metric';
 ```
 
+```sql+sqlite
+select
+  json_extract(t.value, '$.id') as id,
+  json_extract(t.value, '$.alertRuleId') as alert_rule_id,
+  json_extract(t.value, '$.label') as label,
+  json_extract(t.value, '$.thresholdType') as threshold_type,
+  json_extract(t.value, '$.alertThreshold') as alert_threshold,
+  json_extract(t.value, '$.resolveThreshold') as resolve_threshold,
+  json_extract(t.value, '$.dateCreated') as date_created,
+  t.value as actions
+from
+  sentry_metric_alert,
+  json_each(triggers) as t
+where
+  name = 'alert-metric';
+```
+
 ### List alerts older than a month
 Explore which alerts have been active for longer than a month to assess areas that may require attention or review. This can help identify lingering issues within your project or organization that have not been resolved.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -107,4 +158,20 @@ from
   sentry_metric_alert
 where
   date_created <= now() - interval '1 month';
+```
+
+```sql+sqlite
+select
+  id,
+  name,
+  owner,
+  organization_slug,
+  project_slug,
+  aggregate,
+  data_set,
+  date_created
+from
+  sentry_metric_alert
+where
+  date_created <= datetime('now', '-1 month');
 ```

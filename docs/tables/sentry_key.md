@@ -16,7 +16,19 @@ The `sentry_key` table provides insights into API Keys within Sentry. As a devel
 ### Basic info
 Explore which Sentry keys are active, their associated projects, and their public visibility status. This can help in managing access and maintaining security within your projects.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  is_active,
+  secret,
+  project_slug,
+  public
+from
+  sentry_key;
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -31,7 +43,21 @@ from
 ### List keys for a particular project
 Discover the segments that are active within a specific project by identifying the unique keys associated with it. This can be useful for managing access and understanding the overall project configuration.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  is_active,
+  secret,
+  project_slug,
+  public
+from
+  sentry_key
+where
+  project_slug = 'go';
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -48,7 +74,21 @@ where
 ### List inactive keys
 Discover the segments that consist of inactive keys to better manage and secure your data resources. This can help you maintain system integrity by identifying potential vulnerabilities or unused keys.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  is_active,
+  secret,
+  project_slug,
+  public
+from
+  sentry_key
+where
+  not is_active;
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -65,7 +105,7 @@ where
 ### List keys older than 90 days
 Discover the segments that have keys older than 90 days to assess the elements within your project that may need updating or removal for security reasons. This query is particularly useful for maintaining system security and preventing potential breaches.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -77,4 +117,18 @@ from
   sentry_key
 where
   date_created <= now() - interval '90 days';
+```
+
+```sql+sqlite
+select
+  id,
+  name,
+  is_active,
+  secret,
+  project_slug,
+  public
+from
+  sentry_key
+where
+  date_created <= datetime('now', '-90 days');
 ```

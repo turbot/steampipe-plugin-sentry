@@ -16,7 +16,21 @@ The `sentry_team` table provides insights into teams within Sentry. As a DevOps 
 ### Basic info
 Assess the elements within your team by reviewing their access rights, roles, and membership status. This query can be used to gain insights into team dynamics and ensure appropriate access levels are maintained for each team member.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  has_access,
+  slug,
+  has_access,
+  is_member,
+  member_count,
+  team_role
+from
+  sentry_team;
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -33,7 +47,23 @@ from
 ### List teams with admin access
 Explore which teams have administrative access to better manage security and user permissions within your organization. This can be particularly useful for auditing purposes or when planning access control strategies.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  has_access,
+  slug,
+  has_access,
+  is_member,
+  member_count,
+  team_role
+from
+  sentry_team
+where
+  team_role = 'admin';
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -52,7 +82,7 @@ where
 ### List your teams
 Explore which teams you are a member of, along with their respective roles and member count. This is useful to understand your team's dynamics and your role within it.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -68,10 +98,42 @@ where
   is_member;
 ```
 
+```sql+sqlite
+select
+  id,
+  name,
+  has_access,
+  slug,
+  has_access,
+  is_member,
+  member_count,
+  team_role
+from
+  sentry_team
+where
+  is_member = 1;
+```
+
 ### List teams without any members
 Determine the teams that lack members to assess potential areas for team reorganization or resource allocation. This query can be useful in identifying unused teams and optimizing team structures.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  has_access,
+  slug,
+  has_access,
+  is_member,
+  member_count,
+  team_role
+from
+  sentry_team
+where
+  member_count = 0;
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -90,7 +152,7 @@ where
 ### List teams without an assigned role
 Identify teams that have not been assigned a role. This is useful for ensuring all teams have the necessary permissions to perform their tasks.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -106,10 +168,27 @@ where
   team_role is null;
 ```
 
+```sql+sqlite
+select
+  id,
+  name,
+  has_access,
+  slug,
+  has_access,
+  is_member,
+  member_count,
+  team_role
+from
+  sentry_team
+where
+  team_role is null;
+```
+
+
 ### List teams which are not assigned to any project
 Determine the teams that are currently unassigned to any projects. This query is useful in identifying potential resources that could be allocated to new or existing projects.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -129,5 +208,28 @@ where
     from
       sentry_project,
       jsonb_array_elements(teams) as t
+  );
+```
+
+```sql+sqlite
+select
+  id,
+  name,
+  has_access,
+  slug,
+  has_access,
+  is_member,
+  member_count,
+  team_role
+from
+  sentry_team
+where
+  id not in
+  (
+    select
+      json_extract(t.value, '$.id')
+    from
+      sentry_project,
+      json_each(teams) as t
   );
 ```

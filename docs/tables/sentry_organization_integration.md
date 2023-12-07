@@ -16,7 +16,19 @@ The `sentry_organization_integration` table provides insights into the integrati
 ### Basic info
 Explore which organizations have integrated with Sentry by checking their status and account type. This can help you understand the scope of Sentry's integration within your organization.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  status,
+  organization_slug,
+  account_type,
+  domain_name
+from
+  sentry_organization_integration;
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -31,7 +43,7 @@ from
 ### List integrations which are not active
 Discover the segments that include inactive integrations within organizations to assess the areas requiring attention or potential updates. This can be beneficial in enhancing system efficiency and security by identifying and addressing inactive components.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -45,10 +57,38 @@ where
   status <> 'active';
 ```
 
+```sql+sqlite
+select
+  id,
+  name,
+  status,
+  organization_slug,
+  account_type,
+  domain_name
+from
+  sentry_organization_integration
+where
+  status != 'active';
+```
+
 ### List github integrations
 Explore which GitHub integrations are active within your organization by assessing their status, account types, and associated domain names. This can help identify any potential issues or areas for improvement in your organization's use of GitHub.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  status,
+  organization_slug,
+  account_type,
+  domain_name
+from
+  sentry_organization_integration
+where
+  provider_key = 'github';
+```
+
+```sql+sqlite
 select
   id,
   name,

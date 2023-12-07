@@ -16,7 +16,20 @@ The `sentry_issue_alert` table provides insights into Issue Alerts within Sentry
 ### Basic info
 Explore which issues have triggered alerts in your Sentry application. This can help in identifying potential problematic areas, allowing for timely intervention and issue resolution.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  owner,
+  organization_slug,
+  project_slug,
+  action_match,
+  date_created
+from
+  sentry_issue_alert;
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -32,7 +45,7 @@ from
 ### List alerts for a particular project
 Explore the alerts associated with a specific project to gain insights into issues that may need immediate attention. This can help in assessing the health and stability of the project.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -47,10 +60,26 @@ where
   project_slug = 'go';
 ```
 
+```sql+sqlite
+select
+  id,
+  name,
+  owner,
+  organization_slug,
+  project_slug,
+  action_match,
+  date_created
+from
+  sentry_issue_alert
+where
+  project_slug = 'go';
+```
+
+
 ### List alerts owned by a particular team
 Determine the areas in which specific alerts are owned by a certain team. This can help in understanding the distribution of responsibility and tracking the issues that a particular team needs to address.
 
-```sql
+```sql+postgres
 select
   a.id,
   a.name,
@@ -67,10 +96,14 @@ where
   and t.name = 'Team A';
 ```
 
+```sql+sqlite
+Error: SQLite does not support split_part function.
+```
+
 ### Show list of actions of a particular alert
 Explore the actions associated with a specific alert to gain insights into its configuration and owner details. This can be useful for understanding the alert's role and impact within a project.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -83,10 +116,23 @@ where
   name = 'alert1';
 ```
 
+```sql+sqlite
+select
+  id,
+  name,
+  owner,
+  project_slug,
+  actions
+from
+  sentry_issue_alert
+where
+  name = 'alert1';
+```
+
 ### List alerts older than a month
 Analyze the settings to understand any alerts that have been active for over a month. This can help in identifying long-standing issues that may require immediate attention or escalation.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -99,4 +145,19 @@ from
   sentry_issue_alert
 where
   date_created <= now() - interval '1 month';
+```
+
+```sql+sqlite
+select
+  id,
+  name,
+  owner,
+  organization_slug,
+  project_slug,
+  action_match,
+  date_created
+from
+  sentry_issue_alert
+where
+  date_created <= datetime('now', '-1 month');
 ```
