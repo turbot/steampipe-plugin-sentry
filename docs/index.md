@@ -120,7 +120,4 @@ connection "sentry" {
 }
 ```
 
-## Get involved
 
-- Open source: https://github.com/turbot/steampipe-plugin-sentry
-- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)
