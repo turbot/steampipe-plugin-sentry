@@ -8,6 +8,7 @@ short_name: "sentry"
 description: "Steampipe plugin to query organizations, projects, teams and more from Sentry."
 og_description: "Query Sentry with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/sentry-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # Sentry + Steampipe
