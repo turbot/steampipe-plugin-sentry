@@ -9,22 +9,12 @@ import (
 
 	"github.com/jianyuan/go-sentry/v2/sentry"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/schema"
 	"golang.org/x/oauth2"
 )
 
 type sentryConfig struct {
-	AuthToken *string `cty:"auth_token"`
-	BaseUrl   *string `cty:"base_url"`
-}
-
-var ConfigSchema = map[string]*schema.Attribute{
-	"auth_token": {
-		Type: schema.TypeString,
-	},
-	"base_url": {
-		Type: schema.TypeString,
-	},
+	AuthToken *string `hcl:"auth_token"`
+	BaseUrl   *string `hcl:"base_url"`
 }
 
 const (
