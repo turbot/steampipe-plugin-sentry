@@ -218,7 +218,7 @@ func tableSentryProject(ctx context.Context) *plugin.Table {
 				Description: "The project teams.",
 			},
 
-			/// Steampipe standard columns
+			// / Steampipe standard columns
 			{
 				Name:        "title",
 				Description: "Title of the resource.",
@@ -236,7 +236,7 @@ func listProjects(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDat
 		return nil, err
 	}
 
-	projects, _, err := conn.Projects.List(ctx)
+	projects, _, err := conn.Projects.List(ctx, nil)
 	if err != nil {
 		plugin.Logger(ctx).Error("sentry_project.listProjects", "api_error", err)
 		return nil, err
@@ -287,7 +287,7 @@ func getProjectFilters(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 		return nil, err
 	}
 
-	filters, _, err := conn.ProjectFilter.Get(ctx, *project.Organization.Slug, project.Slug)
+	filters, _, err := conn.ProjectFilters.Get(ctx, *project.Organization.Slug, project.Slug)
 	if err != nil {
 		plugin.Logger(ctx).Error("sentry_project.getProjectFilters", "api_error", err)
 		return nil, err
