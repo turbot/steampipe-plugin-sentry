@@ -1,13 +1,13 @@
 module github.com/turbot/steampipe-plugin-sentry
 
-go 1.23.1
+go 1.24
 
-toolchain go1.23.2
+toolchain go1.24.1
 
 require (
 	github.com/jianyuan/go-sentry/v2 v2.6.2
-	github.com/turbot/steampipe-plugin-sdk/v5 v5.11.7
-	golang.org/x/oauth2 v0.21.0
+	github.com/turbot/steampipe-plugin-sdk/v5 v5.13.0
+	golang.org/x/oauth2 v0.27.0
 )
 
 require (
