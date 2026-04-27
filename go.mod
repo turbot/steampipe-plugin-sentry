@@ -5,7 +5,7 @@ go 1.24
 toolchain go1.24.1
 
 require (
-	github.com/jianyuan/go-sentry/v2 v2.6.2
+	github.com/jianyuan/go-sentry/v2 v2.8.4
 	github.com/turbot/steampipe-plugin-sdk/v5 v5.13.1
 	golang.org/x/oauth2 v0.27.0
 )
