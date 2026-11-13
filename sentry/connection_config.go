@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/jianyuan/go-sentry/v2/sentry"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
 	"golang.org/x/oauth2"
 )
 
@@ -27,10 +27,10 @@ func ConfigInstance() interface{} {
 
 // GetConfig :: retrieve and cast connection config from query data
 func GetConfig(connection *plugin.Connection) sentryConfig {
-	if connection == nil || connection.Config == nil {
+	if connection == nil || connection.GetConfig() == nil {
 		return sentryConfig{}
 	}
-	config, _ := connection.Config.(sentryConfig)
+	config, _ := connection.GetConfig().(sentryConfig)
 	return config
 }
 
@@ -38,7 +38,7 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error)
 
 	// Load connection from cache, which preserves throttling protection etc
 	cacheKey := "sentry"
-	if cachedData, ok := d.ConnectionManager.Cache.Get(cacheKey); ok {
+	if cachedData, ok := d.ConnectionCache.Get(ctx, cacheKey); ok {
 		return cachedData.(*sentry.Client), nil
 	}
 
@@ -72,7 +72,7 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error)
 		}
 
 		// Save to cache
-		d.ConnectionManager.Cache.Set(cacheKey, client)
+		_ = d.ConnectionCache.Set(ctx, cacheKey, client)
 		return client, nil
 	} else { // Authenticate with CLI
 		home, _ := os.UserHomeDir()
@@ -99,11 +99,11 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*sentry.Client, error)
 			client := sentry.NewClient(httpClient)
 
 			// Save to cache
-			d.ConnectionManager.Cache.Set(cacheKey, client)
+			_ = d.ConnectionCache.Set(ctx, cacheKey, client)
 
 			return client, nil
 		}
 	}
 
-	return nil, errors.New("'auth_token' must be set in the connection configuration. Edit your connection configuration file and then restart Steampipe.")
+	return nil, errors.New("'auth_token' must be set in the connection configuration. Edit your connection configuration file and then restart Steampipe")
 }
